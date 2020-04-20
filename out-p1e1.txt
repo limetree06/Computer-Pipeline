@@ -1,0 +1,20 @@
+Cycle 1
+PC: 0000
+instruction: 00854024
+
+Cycle 2
+PC: 0004
+instruction: 01084027
+
+Cycle 3
+PC: 0008
+instruction: 00a64827
+
+Cycle 4
+PC: 000c
+instruction: 01095025
+
+Cycle 5
+PC: 0010
+instruction: 314a0014
+

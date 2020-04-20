@@ -1,0 +1,80 @@
+Cycle 1
+PC: 0000
+instruction: 08000008
+
+Cycle 2
+PC: 0000
+instruction: 08000008
+
+Cycle 3
+PC: 0000
+instruction: 08000008
+
+Cycle 4
+PC: 0000
+instruction: 08000008
+
+Cycle 5
+PC: 0000
+instruction: 08000008
+
+Cycle 6
+PC: 0000
+instruction: 08000008
+
+Cycle 7
+PC: 0000
+instruction: 08000008
+
+Cycle 8
+PC: 0000
+instruction: 08000008
+
+Cycle 9
+PC: 0000
+instruction: 08000008
+
+Cycle 10
+PC: 0000
+instruction: 08000008
+
+Cycle 11
+PC: 0000
+instruction: 08000008
+
+Cycle 12
+PC: 0000
+instruction: 08000008
+
+Cycle 13
+PC: 0000
+instruction: 08000008
+
+Cycle 14
+PC: 0000
+instruction: 08000008
+
+Cycle 15
+PC: 0000
+instruction: 08000008
+
+Cycle 16
+PC: 0000
+instruction: 08000008
+
+Cycle 17
+PC: 0000
+instruction: 08000008
+
+Cycle 18
+PC: 0000
+instruction: 08000008
+
+Cycle 19
+PC: 0000
+instruction: 08000008
+
+Cycle 20
+PC: 0000
+instruction: 08000008
+
