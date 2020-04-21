@@ -11,28 +11,22 @@ using namespace std;
 
 vector <int> reg31;
 
+int mem[6];
 
 int main(int argc, char *argv[]) {
 		int cycle = atoi(argv[2]);
 		int count = 0;
 		int rc = 0;
+		int mod = 2;
 		string file(argv[1]);
 		ifstream read;
 		ifstream read1;
+		
 
-		if (argc == 3) {
-			read1.open(argv[2]);
-			if (read.is_open()) {
-				while (!read1.eof()) {
-					char regis[9];
-					read.getline(regis, 9);
-					reg[rc] = hexadec(regis);
-					if (rc == 32) break;
-					else rc++;
-				}
-				read1.close();
-			}
-		}
+		if(argc == 4){
+				string str = argv[3];
+				if(str =="[01]"||str=="01"||str=="Mode:[01]") mod =1;
+				else mod =0;}
 
 		read.open(file.c_str());
 		if (read.is_open()) {
@@ -45,7 +39,7 @@ int main(int argc, char *argv[]) {
 				int *bin = hexatobinary(hexacode);
 				pins[count].getbinary(bin);
 				pins[count].com = command[getcom(bin)];
-				int *mem = baseinfo(bin, pins[count].com);
+				baseinfo(bin, pins[count].com);
 				pins[count].rs = mem[0];
 				pins[count].rt = mem[1];
 				pins[count].rd = mem[2];
@@ -55,35 +49,135 @@ int main(int argc, char *argv[]) {
 				count++; }
 		read.close();
 	}
+		
+		 if (argc == 5){
+                        string file1(argv[4]);
+                        read1.open(file1.c_str());
+                        if (read1.is_open()) {
+                                while (!read1.eof()) {
+                                        char regis[9];
+                                        read1.getline(regis, 9);
+                                        reg[rc] = hexadec(regis);
+                                        if (rc == 32) break;
+                                        else rc++;
+                                }
+                                read1.close();
+                        }
+                }
+
+
+
 		int exe = 0;
 		int calcount = 0;
-		while (exe < cycle) {
+		while (exe < cycle){
+			int pre;
 			cout << "Cycle " << ++exe << endl;
 			cout << "PC: ";
-			printhexa(pins[calcount].current,4);
+			printhexa(pins[calcount].current,4,0);
 			pins[calcount].printins();
-			calcount = calculator(calcount);
+			pre = calcount;
+			calcount = calculator(pre);
+			if(argc > 3) printmem(calcount);
 			if (count == calcount) break;
 			cout << endl;
 		}
 		return 0;
 }
 
+void printmem(int calcount) {
+	char hexa[8];
+	cout<<"Registers:"<<endl;
+	for (int i = 0; i < 32; i++) {
+		hexa[0] = '0'; hexa[1] = '0'; hexa[2] = '0'; hexa[3] = '0';
+		hexa[4] = '0'; hexa[5] = '0'; hexa[6] = '0'; hexa[7] = '0';
+		cout << "[" << i << "] ";
+		printhexa(reg[i], 8,0);
+	}
+
+	cout << "Memory I/O: ";
+	if (pins[calcount].com == "lw") {
+		cout << "R " << "8 ";
+		printhexa(reg[pins[calcount].rs] + pins[calcount].cons, 4,1);
+		cout << " ";
+		printhexa(pins[calcount].cons, 8,0);
+	}
+
+	else if (pins[calcount].com == "sw") {
+		cout << "W " << "8 ";
+		printhexa(reg[pins[calcount].rt] + pins[calcount].cons, 4,1);
+		cout <<" ";
+		printhexa(pins[calcount].cons, 8,0);
+	}
+
+	else if (pins[calcount].com == "lh") {
+		cout << "R " << "4 ";
+		printhexa(reg[pins[calcount].rs] + pins[calcount].cons, 4,1);
+		cout << " ";
+		printhexa(pins[calcount].cons, 4,0);
+	}
+
+	else if (pins[calcount].com == "lhu") {
+		int a = pins[calcount].cons;
+		if (pins[calcount].cons < 0) {
+			a = (~pins[calcount].cons) + 1;
+		}
+		cout << "R " << "4 ";
+		printhexa(reg[pins[calcount].rs] + a, 4,1);
+		cout << " ";
+		printhexa(pins[calcount].cons, 4,0);
+	}
+
+	else if (pins[calcount].com == "sh") {
+		cout << "W " << "4 ";
+		printhexa(pins[calcount].cons + reg[pins[calcount].rt], 4,2);
+		cout << " ";
+		printhexa(pins[calcount].cons, 4,0);
+	}
+	else if (pins[calcount].com == "lb") {
+		cout << "R " << "2 ";
+		printhexa(reg[pins[calcount].rs] + pins[calcount].cons, 4,1);
+		cout << " ";
+		printhexa(pins[calcount].cons, 2,0);
+	}
+
+	else if (pins[calcount].com == "lbu") {
+		int a = pins[calcount].cons;
+		if (pins[calcount].cons < 0) {
+			a = (~pins[calcount].cons) + 1;
+		}
+		cout << "R " << "2 ";
+		printhexa(reg[pins[calcount].rs] + a, 4,1);
+		cout << " ";
+		printhexa(pins[calcount].cons, 2,0);
+	}
+
+	else if (pins[calcount].com == "sb") {
+		cout << "W " << "2 ";
+		printhexa(reg[pins[calcount].rt] + pins[calcount].cons, 4,1);
+		cout << " ";
+		printhexa(pins[calcount].cons, 2,0);
+	}
+	else cout << " " << endl;
+	cout << endl;
+}
+
+
+
+
 
 int hexadec(char hexareg[]) {
 	int value = 0;
 	int *bi = hexatobinary(hexareg);
 	for (int i = 31; i > 0; i--) {
-		value = bi[i] * (int)pow(2, 31 - i);
+		value += bi[i] * (int)pow(2, 31 - i);
 	}
 	if (bi[0] == 1) { value -= (int)pow(2, 31); }
-	else return value;
 
-	return 0;
+	return value;
 }
 
 	
-void printhexa(unsigned int dec, int length) {
+void printhexa(unsigned int dec, int length,int a) {
 	char *hexa = new char[length];
 	for (int i = 0; i < length; i++) { hexa[i] = '0'; }
 	int pos = 0;
@@ -91,17 +185,15 @@ void printhexa(unsigned int dec, int length) {
 	while (1) {
 		unsigned int mod = dec % 16;
 		if (mod < 10) { hexa[pos] = '0' + mod; }
-		else if (mod > 9) { hexa[pos] = 'a' + (mod - 10); }
-		else { hexa[pos] = 'A' + (mod - 10); }
+		else hexa[pos] = 'A' + (mod - 10);
 
 		pos++;
 		dec = dec / 16;
 		if (dec == 0) break;
 	}
-
 	for (int i = length - 1; i >= 0; i--) { cout << hexa[i]; }
-	cout << endl;
 	delete[] hexa;
+	if(a!=1) {cout << endl;}
 }
 
 int calculator(int calcount) {
@@ -189,7 +281,7 @@ int calculator(int calcount) {
 		else reg[pins[calcount].rd] = 0;
 	}
 
-	else if (com == "j") { return insmem[4 * pins[calcount].address]; }
+	else if (com == "j") { return insmem[(4*pins[calcount].address)]; }
 	else if (com == "jr") {
 		calcount = insmem[reg[31]];
 		reg31.pop_back();
@@ -198,11 +290,17 @@ int calculator(int calcount) {
 	else if (com == "jal") {
 		reg31.push_back(pins[calcount].current);
 		reg[31] = reg31.back();
-		return insmem[4 * pins[calcount].address];
+		return insmem[(4*pins[calcount].address)];
 	}
 
-	return calcount + 1;
+	else return calcount + 1;
+
+	return calcount+1;
 }
+
+
+
+
 int *hexatobinary(char hexacode[]) {
 	static int bin[32];
 	for (int i = 0; i < 8; i++) {
@@ -287,8 +385,8 @@ int getcom(int bin[]) {
 	return 0;
 }
 
-int *baseinfo(int bin[], string com) {
-	int mem[6] = { 0, };
+void baseinfo(int bin[], string com) {
+	mem[0] =0; mem[1]=0; mem[2]=0; mem[3]=0; mem[4]=0; mem[5]=0;
 	int address = 0, rs = 0, rt = 0, rd = 0, shamt = 0, cons = 0;
 
 	if (com == "j" || com == "jal") {
@@ -296,9 +394,9 @@ int *baseinfo(int bin[], string com) {
 		for (int i = 31; i >= 6; i--) {
 			address += bin[i] * (int)pow(2, 31 - i);
 		}
+		
 		mem[5] = address;
-		return mem;
-	}
+		}
 
 	else {
 		for (int i = 10; i >= 6; i--) {
@@ -334,6 +432,5 @@ int *baseinfo(int bin[], string com) {
 			if (bin[16] == 1) { cons -= (int)pow(2, 16); }
 			mem[4] = cons;
 		}
-		return mem;
 	}
 };

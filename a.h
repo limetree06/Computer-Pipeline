@@ -6,16 +6,16 @@ using namespace std;
 
 int *hexatobinary(char[]);
 int getcom(int[]);
-int *baseinfo(int[], string);
+void baseinfo(int[], string);
 int calculator(int);
-void printhexa(unsigned int, int);
+void printhexa(unsigned int, int,int);
 void printmem(int);
 int hexadec(char[]);
 
 int PC = 0;
-static int reg[32];
-static int memory[65536] = { 0, };
-static int insmem[4096] = { 0, };
+int reg[32]={0,};
+int memory[65536] = { 0, };
+int insmem[4096] = { 0, };
 
 static string command[] =
 { "empty", "add", "sub", "addi", "lw", "sw", "lh", "lhu", "sh", "lb", "lbu", "sb" , "lui",
@@ -44,7 +44,7 @@ public:
 	void getbinary(int bin[]) { for (int i = 0; i < 32; i++) { bi[i] = bin[i]; } }
 
 	void printins() {
-		cout << "instruction: ";
+		cout << "Instruction: ";
 		for (int i = 0; i < 8; i++) { cout << code[i]; }
 		cout << endl;
 	}
